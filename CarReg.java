@@ -156,6 +156,11 @@ public class CarReg extends javax.swing.JFrame {
         });
 
         jButton2.setText("Edit");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Delete");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -250,6 +255,11 @@ public class CarReg extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -283,6 +293,34 @@ public class CarReg extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+        
+        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
+        
+        int selectIndex = jTable1.getSelectedRow();
+        
+        String id = d1.getValueAt(selectIndex, 0).toString();
+        
+        int dialogResult = JOptionPane.showConfirmDialog(this, "Do you want to delete the record ?","WARNING", JOptionPane.YES_NO_OPTION);
+        
+        if(dialogResult == JOptionPane.YES_OPTION){
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/Deva_Car_Rental", "root", "Dev@Markam750");
+            
+            pst = con.prepareStatement("delete from carregistration where car_no = ?");
+            
+            pst.setString(1, id);
+            pst.executeUpdate();
+            
+            JOptionPane.showMessageDialog(this, "Record Deleted Successfully!!!");
+            table_update();
+            
+        }catch(ClassNotFoundException ex){
+            Logger.getLogger(CarReg.class.getName()).log(Level.SEVERE, null, ex);
+        }catch(SQLException ex){
+            Logger.getLogger(CarReg.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void txtbrandActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtbrandActionPerformed
@@ -326,6 +364,55 @@ public class CarReg extends javax.swing.JFrame {
             Logger.getLogger(CarReg.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        
+        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
+        
+        int selectIndex = jTable1.getSelectedRow();
+        
+        txtregno.setText(d1.getValueAt(selectIndex, 0).toString());
+        txtbrand.setText(d1.getValueAt(selectIndex, 1).toString());
+        txtmodel.setText(d1.getValueAt(selectIndex, 2).toString());
+        Comavl.setSelectedItem(d1.getValueAt(selectIndex, 3).toString());
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        
+        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
+        
+        int selectIndex = jTable1.getSelectedRow();
+        
+        try{
+            String id = d1.getValueAt(selectIndex, 0).toString();
+            String brand = txtbrand.getText();
+            String mod = txtmodel.getText();
+            String status = Comavl.getSelectedItem().toString();
+            
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/Deva_Car_Rental", "root", "Dev@Markam750");
+            
+            pst = con.prepareStatement("update carregistration set brand=?,model=?,available=? where car_no = ?");
+            
+            pst.setString(1, brand);
+            pst.setString(2, mod);
+            pst.setString(3, status);
+            pst.setString(4, id);
+            pst.executeUpdate();
+            
+            JOptionPane.showMessageDialog(this, "Record Updated Successfully!!!");
+            
+            table_update();
+            
+            
+            }catch(ClassNotFoundException ex){
+            Logger.getLogger(CarReg.class.getName()).log(Level.SEVERE, null, ex);
+        }catch(SQLException ex){
+            Logger.getLogger(CarReg.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
